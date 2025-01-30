@@ -5,6 +5,7 @@ export default {
   theme: {
     extend: {
       borderRadius: {
+        DEFAULT: "var(--radius)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
@@ -51,6 +52,9 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+      },
+      fontFamily: {
+        instaSans: ["Sans", "serif"],
       },
     },
   },
