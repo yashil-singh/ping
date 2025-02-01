@@ -6,6 +6,7 @@ import morgan from "morgan";
 import errorHandler from "./middlewares/handleError";
 
 import authRoutes from "../src/routes/authRoutes";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -14,11 +15,17 @@ const PORT = process.env.PORT;
 const app = express();
 
 // Middlewares
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan("dev"));
-app.use(helmet());
+app.use(
+  cors({
+    origin: true, // Allow all origins
+    credentials: true, // Allows cookies to be sent
+  })
+); // Allow cors origin requests
+app.use(cookieParser()); // Parses cookies
+app.use(express.json()); // Parses JSON
+app.use(express.urlencoded({ extended: true })); // Parses form data
+app.use(morgan("dev")); // Logs HTTP requests
+app.use(helmet()); // Adds security headers
 
 app.use("/api/auth", authRoutes);
 
