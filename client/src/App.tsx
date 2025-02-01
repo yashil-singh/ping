@@ -12,6 +12,14 @@ import Inbox from "./pages/Root/Inbox/Inbox";
 import Notifications from "./pages/Root/Notifications";
 import Create from "./pages/Root/Create";
 import Discover from "./pages/Root/Discover";
+import Settings from "./pages/Root/Profile/Settings";
+import InboxLayout from "./components/layouts/InboxLayout";
+import Chat from "./pages/Root/Inbox/Chat";
+import { useAuthStore } from "./lib/store/authStore";
+import { useEffect } from "react";
+import LoadingScreen from "./components/LoadingScreen";
+import NonVerifiedLayout from "./components/layouts/NonVerifiedLayout";
+import VerifyAccount from "./pages/Auth/VerifyAccount";
 
 const router = createBrowserRouter([
   {
@@ -24,8 +32,8 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/profile/:username",
-        element: <Profile />,
+        path: "/profile/settings",
+        element: <Settings />,
       },
       {
         path: "/create",
@@ -41,12 +49,31 @@ const router = createBrowserRouter([
       },
       {
         path: "/inbox",
+        element: <InboxLayout />,
         children: [
           {
             index: true,
             element: <Inbox />,
           },
+          {
+            path: "chat/:id",
+            element: <Chat />,
+          },
         ],
+      },
+      {
+        path: "/:username",
+        element: <Profile />,
+      },
+    ],
+  },
+  {
+    path: "/verify-account",
+    element: <NonVerifiedLayout />,
+    children: [
+      {
+        index: true,
+        element: <VerifyAccount />,
       },
     ],
   },
@@ -66,7 +93,7 @@ const router = createBrowserRouter([
         element: <ForgotPassword />,
       },
       {
-        path: "/reset-password",
+        path: "/reset-password/:token",
         element: <ResetPassword />,
       },
     ],
@@ -74,6 +101,16 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const { fetchUser, isLoading } = useAuthStore();
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <>
       <RouterProvider router={router} />

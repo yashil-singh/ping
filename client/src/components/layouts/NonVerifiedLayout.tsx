@@ -1,10 +1,14 @@
 import { useAuthStore } from "@/lib/store/authStore";
 import { Navigate, Outlet } from "react-router-dom";
 
-const AuthLayout = () => {
+const NonVerifiedLayout = () => {
   const { user } = useAuthStore();
 
-  if (user) {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.isVerified) {
     return <Navigate to="/" replace />;
   }
 
@@ -15,4 +19,4 @@ const AuthLayout = () => {
   );
 };
 
-export default AuthLayout;
+export default NonVerifiedLayout;

@@ -18,13 +18,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { forgotPassword } from "@/hooks/useAuth";
 import { forgotPasswordSchema } from "@/lib/schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
@@ -35,7 +38,29 @@ const ForgotPassword = () => {
   async function onForgotPassword(
     values: z.infer<typeof forgotPasswordSchema>
   ) {
-    console.log("🚀 ~ values:", values);
+    const { success, data, errorMessage, errors } = await forgotPassword(
+      values.email
+    );
+
+    if (success) {
+      toast({ description: data.message });
+
+      navigate("/login");
+    } else {
+      if (errors) {
+        errors.map((error) => {
+          toast({
+            description: error,
+            variant: "destructive",
+          });
+        });
+      } else {
+        toast({
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    }
   }
 
   return (
@@ -74,11 +99,22 @@ const ForgotPassword = () => {
             />
           </CardContent>
           <CardFooter className="flex-col gap-2">
-            <Button className="w-full">Continue</Button>
+            <Button className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Sending Link..." : "Send Link"}
+            </Button>
             <p className="text-muted-foreground text-sm">
               Go back to{" "}
-              <Button type="button" variant="link" asChild>
-                <Link to="/login">Login</Link>
+              <Button
+                type="button"
+                variant="link"
+                disabled={form.formState.isSubmitting}
+                asChild
+              >
+                {form.formState.isSubmitting ? (
+                  <p className="cursor-pointer">Login</p>
+                ) : (
+                  <Link to="/login">Login</Link>
+                )}
               </Button>
             </p>
           </CardFooter>

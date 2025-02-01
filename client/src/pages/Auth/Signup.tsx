@@ -17,7 +17,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { signup } from "@/hooks/useAuth";
 import { signupSchema } from "@/lib/schemas/authSchema";
+import { useAuthStore } from "@/lib/store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
@@ -37,12 +40,36 @@ const Signup = () => {
     },
   });
 
+  const { fetchUser } = useAuthStore();
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
 
   async function onSignup(values: z.infer<typeof signupSchema>) {
-    console.log("🚀 ~ values:", values);
+    const { data, success, errors, errorMessage } = await signup(values);
+
+    if (success) {
+      toast({
+        description: data.message,
+      });
+
+      fetchUser();
+    } else {
+      if (errors) {
+        errors.map((error) => {
+          toast({
+            description: error,
+            variant: "destructive",
+          });
+        });
+      } else {
+        toast({
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    }
   }
 
   return (
@@ -177,7 +204,9 @@ const Signup = () => {
               />
             </CardContent>
             <CardFooter className="flex-col gap-1">
-              <Button className="w-full">Signup</Button>
+              <Button className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Signing up" : "Signup"}
+              </Button>
               <p className="text-muted-foreground text-sm">
                 Already have an account?{" "}
                 <Button type="button" variant="link" className="ml-1" asChild>
