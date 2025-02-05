@@ -45,3 +45,7 @@ export const generateRandomNumber = (length: number) => {
 export const generateRandomString = (length: number) => {
   return randomatic("Aa0", length);
 };
+
+export const extractCloudinaryPublicId = (url: string) => {
+  return url.split("/").pop()?.split(".")[0];
+};

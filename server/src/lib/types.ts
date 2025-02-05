@@ -11,6 +11,10 @@ export interface AuthenticatedRequest extends Request {
   user?: TokenPayload;
 }
 
+export interface UploadImageRequest extends AuthenticatedRequest {
+  uploadFolder?: string;
+}
+
 export type EmailOptions = {
   to: string;
   subject: string;

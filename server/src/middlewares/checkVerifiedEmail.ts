@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import prisma from "../lib/prisma";
 import { AuthenticatedRequest } from "../lib/types";
-import errorResponse from "../lib/errorResponse";
+import errorResponse from "../lib/response/errorResponse";
 
 const checkVerifiedEmail = async (
   req: AuthenticatedRequest,

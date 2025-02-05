@@ -46,3 +46,18 @@ export const resetPasswordSchema = z.object({
       "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character."
     ),
 });
+
+export const changePasswordSchema = z.object({
+  oldPassword: z
+    .string({ required_error: "Old password is required." })
+    .min(6, "Password must be atleast 6 characters")
+    .max(30, "Password must be atmost 30 characters."),
+  newPassword: z
+    .string({ required_error: "New password is required." })
+    .min(6, "Password must be atleast 6 characters")
+    .max(30, "Password must be atmost 30 characters.")
+    .regex(
+      PASSWORD_PATTERN,
+      "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character."
+    ),
+});

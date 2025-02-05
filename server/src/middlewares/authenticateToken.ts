@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import errorResponse from "../lib/errorResponse";
+import errorResponse from "../lib/response/errorResponse";
 import { verifyJwtToken } from "../lib/token";
 import { AuthenticatedRequest } from "../lib/types";
 

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../lib/prisma";
-import errorResponse from "../lib/errorResponse";
-import successResponse from "../lib/successResponse";
+import errorResponse from "../lib/response/errorResponse";
+import successResponse from "../lib/response/successResponse";
 import bcrypt from "bcryptjs";
 import {
   generateRandomNumber,
@@ -350,6 +350,43 @@ export const resetPassword = async (
       res,
       message: "Password was reset successfully.",
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const { id } = req.user!;
+
+    const user = await prisma.user.findUnique({ where: { id } });
+
+    const isValidPassword = await bcrypt.compare(oldPassword, user!.password);
+
+    if (!isValidPassword)
+      return errorResponse({ res, message: "Password was incorrect." });
+
+    const isSamePassword = await bcrypt.compare(newPassword, user!.password);
+
+    if (isSamePassword)
+      return errorResponse({
+        res,
+        message: "Password can't be same as the current one.",
+      });
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    await prisma.user.update({
+      data: { password: hashedPassword },
+      where: { id },
+    });
+
+    return successResponse({ res, message: "Password changed successfully." });
   } catch (error) {
     next(error);
   }
