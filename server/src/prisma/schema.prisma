@@ -13,41 +13,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum MessageType {
+  TEXT
+  MEDIA
+  POST
+  LINK
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
 model User {
-  id                String        @id @default(uuid())
+  id                String         @id @default(uuid())
   name              String
-  username          String        @unique
-  email             String        @unique
+  username          String         @unique
+  email             String         @unique
   password          String
   bio               String?
   avatarUrl         String?
-  isPublic          Boolean       @default(true)
-  verificationToken Int?          @unique
-  resetToken        String?       @unique
-  isVerified        Boolean       @default(false)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  isPublic          Boolean        @default(true)
+  verificationToken Int?           @unique
+  resetToken        String?        @unique
+  isVerified        Boolean        @default(false)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
   posts             Post[]
   comments          Comment[]
   postLikes         PostLike[]
-  repliesByUser     Reply[]       @relation("author")
-  repliesToUser     Reply[]       @relation("replyTo")
+  repliesByUser     Reply[]        @relation("author")
+  repliesToUser     Reply[]        @relation("replyTo")
   commentLikes      CommentLike[]
   replyLikes        ReplyLike[]
+  messagesSent      Message[]      @relation("messagesSent")
+  followers         UserRelation[] @relation("userFollowers")
+  followings        UserRelation[] @relation("userFollowings")
+  chatsInitiated    Chat[]         @relation("chatsCreated")
+  chats             ChatMember[]   @relation("chatMember")
+  addedBy           ChatMember[]   @relation("addedBy")
 
   @@map("users")
 }
 
+model UserRelation {
+  followedById String
+  followedToId String
+  createdAt    DateTime @default(now())
+  follower     User     @relation("userFollowers", fields: [followedById], references: [id])
+  following    User     @relation("userFollowings", fields: [followedToId], references: [id])
+
+  @@id([followedById, followedToId])
+  @@map("user_relations")
+}
+
 model Post {
-  id        String     @id @default(uuid())
-  caption   String?
-  imageUrls String[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  authorId  String
-  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments  Comment[]
-  postLikes PostLike[]
+  id             String     @id @default(uuid())
+  caption        String?
+  imageUrls      String[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  authorId       String
+  author         User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments       Comment[]
+  postLikes      PostLike[]
+  messagesSentIn Message[]  @relation("postSent")
 
   @@map("posts")
 }
@@ -114,4 +144,59 @@ model ReplyLike {
   createdAt DateTime @default(now())
 
   @@map("reply_likes")
+}
+
+model Chat {
+  id            String       @id @default(uuid())
+  isGroupChat   Boolean      @default(false)
+  name          String?
+  createdAt     DateTime     @default(now())
+  creatorId     String?
+  lastMessageAt DateTime?
+  creator       User?        @relation("chatsCreated", fields: [creatorId], references: [id])
+  members       ChatMember[]
+  messages      Message[]
+
+  @@map("chats")
+}
+
+model ChatMember {
+  memberId  String
+  member    User     @relation("chatMember", fields: [memberId], references: [id])
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  addedById String?
+  addedBy   User?    @relation("addedBy", fields: [addedById], references: [id])
+  joinedAt  DateTime @default(now())
+
+  @@id([memberId, chatId])
+  @@map("chat_members")
+}
+
+model Message {
+  id        String         @id @default(uuid())
+  type      MessageType
+  content   String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  senderId  String
+  sender    User           @relation("messagesSent", fields: [senderId], references: [id], onDelete: Cascade)
+  chatId    String
+  chat      Chat           @relation(fields: [chatId], references: [id])
+  media     MessageMedia[]
+  postId    String?
+  post      Post?          @relation("postSent", fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model MessageMedia {
+  id        String    @id @default(uuid())
+  url       String
+  type      MediaType
+  createdAt DateTime  @default(now())
+  messageId String
+  message   Message   @relation(fields: [messageId], references: [id])
+
+  @@map("message_media")
 }

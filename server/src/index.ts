@@ -14,6 +14,7 @@ import userRoutes from "../src/routes/userRoutes";
 import postRoutes from "../src/routes/postRoutes";
 import commentRoutes from "../src/routes/commentRoutes";
 import replyRoutes from "../src/routes/replyRoutes";
+import messageRoutes from "../src/routes/messageRoutes";
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/reply", replyRoutes);
+app.use("/api/message", messageRoutes);
 
 app.use(errorHandler); // Global error handler
 

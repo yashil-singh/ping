@@ -3,8 +3,7 @@ import { AuthenticatedRequest } from "../lib/types";
 import prisma from "../lib/prisma";
 import errorResponse from "../lib/response/errorResponse";
 import successResponse from "../lib/response/successResponse";
-import { extractCloudinaryPublicId } from "../lib/utils";
-import cloudinary from "../lib/cloudinary";
+import { deleteImagesFromCloudinary } from "../lib/utils";
 
 export const editProfile = async (
   req: AuthenticatedRequest,
@@ -29,8 +28,7 @@ export const editProfile = async (
     const oldAvatarUrl = user?.avatarUrl;
 
     if (newAvatarUrl && oldAvatarUrl) {
-      const publicId = extractCloudinaryPublicId(oldAvatarUrl);
-      await cloudinary.uploader.destroy(`ping/avatars/${publicId}`);
+      await deleteImagesFromCloudinary(oldAvatarUrl, "avatars");
     }
 
     await prisma.user.update({

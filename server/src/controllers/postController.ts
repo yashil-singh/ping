@@ -3,8 +3,7 @@ import { AuthenticatedRequest } from "../lib/types";
 import prisma from "../lib/prisma";
 import successResponse from "../lib/response/successResponse";
 import errorResponse from "../lib/response/errorResponse";
-import { extractCloudinaryPublicId } from "../lib/utils";
-import cloudinary from "../lib/cloudinary";
+import { deleteImagesFromCloudinary } from "../lib/utils";
 
 export const createPost = async (
   req: AuthenticatedRequest,
@@ -112,8 +111,7 @@ export const deletePost = async (
     const imageUrls = post.imageUrls;
 
     imageUrls.map(async (url) => {
-      const publicId = extractCloudinaryPublicId(url);
-      await cloudinary.uploader.destroy(`ping/posts/${publicId}`);
+      await deleteImagesFromCloudinary(url, "posts");
     });
 
     await prisma.post.delete({ where: { id: postId } });
