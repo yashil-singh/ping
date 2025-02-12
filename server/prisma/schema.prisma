@@ -1,0 +1,265 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String              @id @default(cuid())
+  name                String
+  bio                 String?
+  username            String              @unique
+  password            String
+  avatarUrl           String?
+  isPrivate           Boolean             @default(false)
+  resetToken          String?             @unique
+  resetTokenExpiresAt DateTime?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  posts               Post[]
+  comments            Comment[]
+  repliedByUser       Reply[]             @relation("repliedBy")
+  repliedToUser       Reply[]             @relation("repliedTo")
+  likes               PostLike[]
+  commentLikes        CommentLike[]
+  replyLikes          ReplyLike[]
+  followings          Connection[]        @relation("followedBy")
+  followers           Connection[]        @relation("followedTo")
+  requestsSent        ConnectionRequest[] @relation("requestsSent")
+  requestsReceived    ConnectionRequest[] @relation("requestsReceived")
+  notificationsSent   Notification[]      @relation("notificationsSent")
+  notifications       Notification[]      @relation("notificationsReceived")
+  chatsCreated        Chat[]
+  chats               ChatMember[]        @relation("member")
+  membersAdded        ChatMember[]        @relation("membersAdded")
+  messages            Message[]
+
+  @@index([username])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Connection {
+  followedById String
+  followedToId String
+  createdAt    DateTime @default(now())
+  followedBy   User     @relation(name: "followedBy", references: [id], fields: [followedById], onDelete: Cascade)
+  followedTo   User     @relation(name: "followedTo", references: [id], fields: [followedToId], onDelete: Cascade)
+
+  @@id([followedById, followedToId])
+  @@map("connections")
+}
+
+model ConnectionRequest {
+  followedById String
+  followedToId String
+  isAccepted   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  followedBy   User     @relation(name: "requestsSent", references: [id], fields: [followedById], onDelete: Cascade)
+  followedTo   User     @relation(name: "requestsReceived", references: [id], fields: [followedToId], onDelete: Cascade)
+
+  @@id([followedById, followedToId])
+  @@map("connection_requests")
+}
+
+model Post {
+  id            String         @id @default(cuid())
+  caption       String?
+  isArchived    Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  authorId      String
+  author        User           @relation(references: [id], fields: [authorId], onDelete: Cascade)
+  media         PostMedia[]
+  likes         PostLike[]
+  comments      Comment[]
+  shares        Message[]
+  notifications Notification[]
+
+  @@index([authorId])
+  @@index([createdAt])
+  @@map("posts")
+}
+
+model PostMedia {
+  id                 String   @id @default(cuid())
+  type               String
+  url                String
+  cloudinaryPublicId String
+  createdAt          DateTime @default(now())
+  postId             String
+  post               Post     @relation(references: [id], fields: [postId], onDelete: Cascade)
+
+  @@map("post_media")
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(references: [id], fields: [postId], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+  @@map("post_likes")
+}
+
+model Comment {
+  id            String         @id @default(cuid())
+  content       String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  authorId      String
+  author        User           @relation(references: [id], fields: [authorId], onDelete: Cascade)
+  postId        String
+  post          Post           @relation(references: [id], fields: [postId], onDelete: Cascade)
+  replies       Reply[]
+  likes         CommentLike[]
+  notifications Notification[]
+
+  @@index([postId])
+  @@index([authorId])
+  @@index([createdAt])
+  @@map("comments")
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  commentId String
+  comment   Comment  @relation(references: [id], fields: [commentId], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([commentId])
+  @@map("comment_likes")
+}
+
+model Reply {
+  id            String         @id @default(cuid())
+  content       String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  authorId      String
+  author        User           @relation(name: "repliedBy", references: [id], fields: [authorId], onDelete: Cascade)
+  replyToId     String
+  replyTo       User           @relation(name: "repliedTo", references: [id], fields: [replyToId], onDelete: Cascade)
+  commentId     String
+  comment       Comment        @relation(references: [id], fields: [commentId], onDelete: Cascade)
+  likes         ReplyLike[]
+  notifications Notification[]
+
+  @@index([commentId])
+  @@index([authorId])
+  @@index([createdAt])
+  @@map("replies")
+}
+
+model ReplyLike {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  replyId   String
+  reply     Reply    @relation(references: [id], fields: [replyId], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([replyId])
+  @@map("reply_likes")
+}
+
+model Chat {
+  id          String       @id @default(cuid())
+  name        String?
+  isGroupChat Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  creatorId   String
+  creator     User         @relation(references: [id], fields: [creatorId], onDelete: Cascade)
+  members     ChatMember[]
+  messages    Message[]
+
+  @@index([creatorId])
+  @@index([createdAt])
+  @@map("chats")
+}
+
+model ChatMember {
+  joined    DateTime @default(now())
+  chatId    String
+  chat      Chat     @relation(references: [id], fields: [chatId])
+  userId    String
+  user      User     @relation(name: "member", references: [id], fields: [userId], onDelete: Cascade)
+  addedById String
+  addedBy   User     @relation(name: "membersAdded", references: [id], fields: [addedById], onDelete: Cascade)
+
+  @@id([userId, chatId])
+  @@index([chatId])
+  @@index([userId])
+  @@map("chat_members")
+}
+
+model Message {
+  id        String         @id @default(cuid())
+  type      String
+  content   String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  chatId    String
+  chat      Chat           @relation(references: [id], fields: [chatId], onDelete: Cascade)
+  senderId  String
+  sender    User           @relation(references: [id], fields: [senderId], onDelete: Cascade)
+  postId    String?
+  post      Post?          @relation(references: [id], fields: [postId], onDelete: Cascade)
+  media     MessageMedia[]
+
+  @@index([chatId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+model MessageMedia {
+  id                 String   @id @default(cuid())
+  type               String
+  url                String
+  cloudinaryPublicId String
+  createdAt          DateTime @default(now())
+  messageId          String
+  message            Message  @relation(references: [id], fields: [messageId], onDelete: Cascade)
+
+  @@map("message_media")
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  type       String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  senderId   String
+  sender     User     @relation(name: "notificationsSent", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation(name: "notificationsReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+  postId     String?
+  post       Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId  String?
+  comment    Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  replyId    String?
+  reply      Reply?   @relation(fields: [replyId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("notifications")
+}
