@@ -18,6 +18,7 @@ model User {
   name                String
   bio                 String?
   username            String              @unique
+  email               String              @unique
   password            String
   avatarUrl           String?
   isPrivate           Boolean             @default(false)
