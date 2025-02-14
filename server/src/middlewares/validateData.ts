@@ -1,10 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import z, { ZodError } from "zod";
 
-export const dataValidation = (schema: z.ZodObject<any, any>) => {
+const validateData = (
+  schema: z.ZodObject<any, any>,
+  toValidate: "body" | "params" = "body",
+) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse(req.body);
+      if (toValidate === "body") {
+        schema.parse(req.body);
+      } else {
+        schema.parse(req.params);
+      }
 
       next();
     } catch (error) {
@@ -22,3 +29,5 @@ export const dataValidation = (schema: z.ZodObject<any, any>) => {
     }
   };
 };
+
+export default validateData;

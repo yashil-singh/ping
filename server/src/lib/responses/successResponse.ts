@@ -11,7 +11,7 @@ const successResponse = ({
   message?: string;
   data?: any;
 }) => {
-  res.status(status).json({ message, data });
+  res.status(status).json({ success: true, message, data });
 };
 
 export default successResponse;
