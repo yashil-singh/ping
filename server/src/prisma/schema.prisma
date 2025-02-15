@@ -14,38 +14,54 @@ datasource db {
 }
 
 model User {
-  id                  String              @id @default(cuid())
-  name                String
-  bio                 String?
-  username            String              @unique
-  password            String
-  avatarUrl           String?
-  isPrivate           Boolean             @default(false)
-  resetToken          String?             @unique
-  resetTokenExpiresAt DateTime?
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  posts               Post[]
-  comments            Comment[]
-  repliedByUser       Reply[]             @relation("repliedBy")
-  repliedToUser       Reply[]             @relation("repliedTo")
-  likes               PostLike[]
-  commentLikes        CommentLike[]
-  replyLikes          ReplyLike[]
-  followings          Connection[]        @relation("followedBy")
-  followers           Connection[]        @relation("followedTo")
-  requestsSent        ConnectionRequest[] @relation("requestsSent")
-  requestsReceived    ConnectionRequest[] @relation("requestsReceived")
-  notificationsSent   Notification[]      @relation("notificationsSent")
-  notifications       Notification[]      @relation("notificationsReceived")
-  chatsCreated        Chat[]
-  chats               ChatMember[]        @relation("member")
-  membersAdded        ChatMember[]        @relation("membersAdded")
-  messages            Message[]
+  id                        String              @id @default(cuid())
+  name                      String
+  bio                       String?
+  username                  String              @unique
+  email                     String              @unique
+  password                  String
+  avatarUrl                 String?
+  isPrivate                 Boolean             @default(false)
+  isVerified                Boolean             @default(false)
+  verificationCode          String?             @unique
+  verificationCodeExpiresAt DateTime?
+  resetToken                String?             @unique
+  resetTokenExpiresAt       DateTime?
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+  posts                     Post[]
+  comments                  Comment[]
+  repliedByUser             Reply[]             @relation("repliedBy")
+  repliedToUser             Reply[]             @relation("repliedTo")
+  likes                     PostLike[]
+  commentLikes              CommentLike[]
+  replyLikes                ReplyLike[]
+  followings                Connection[]        @relation("followedBy")
+  followers                 Connection[]        @relation("followedTo")
+  requestsSent              ConnectionRequest[] @relation("requestsSent")
+  requestsReceived          ConnectionRequest[] @relation("requestsReceived")
+  notificationsSent         Notification[]      @relation("notificationsSent")
+  notifications             Notification[]      @relation("notificationsReceived")
+  chatsCreated              Chat[]
+  chats                     ChatMember[]        @relation("member")
+  membersAdded              ChatMember[]        @relation("membersAdded")
+  messages                  Message[]
+  sessions                  Session[]
 
   @@index([username])
   @@index([createdAt])
   @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userId    String   @unique
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@map("sessions")
 }
 
 model Connection {
