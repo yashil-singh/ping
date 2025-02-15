@@ -151,13 +151,13 @@ model Comment {
 }
 
 model CommentLike {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  userId    String
-  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
   commentId String
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
   comment   Comment  @relation(references: [id], fields: [commentId], onDelete: Cascade)
 
+  @@id([commentId, userId])
   @@index([userId])
   @@index([commentId])
   @@map("comment_likes")
@@ -184,13 +184,13 @@ model Reply {
 }
 
 model ReplyLike {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  userId    String
-  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
   replyId   String
+  userId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
   reply     Reply    @relation(references: [id], fields: [replyId], onDelete: Cascade)
 
+  @@id([replyId, userId])
   @@index([userId])
   @@index([replyId])
   @@map("reply_likes")
