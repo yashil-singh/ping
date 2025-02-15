@@ -27,7 +27,7 @@ router.get("/u/:username", getUserByUsername);
 
 router.post(
   "/toggle-connection/:userId",
-  validateData(toggleConnectionSchema, "params"),
+  validateData(toggleConnectionSchema),
   toggleConnection,
 );
 
@@ -41,7 +41,7 @@ router.patch(
 router.patch("/account/toggle-private", togglePrivate);
 router.patch(
   "/request/:userId/:action",
-  validateData(followRequestActionSchema, "params"),
+  validateData(followRequestActionSchema),
   handleConnectionRequest,
 );
 

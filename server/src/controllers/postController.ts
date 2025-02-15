@@ -52,6 +52,30 @@ export const createPost = async (
   }
 };
 
+export const editPost = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: authorId } = req.user!;
+    const { postId } = req.params;
+    const { caption } = req.body;
+
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+
+    if (!post) return throwError("Post not found.", 404);
+
+    if (authorId !== post.authorId) throwError("Action unauthorized", 401);
+
+    await prisma.post.update({ data: { caption }, where: { id: postId } });
+
+    return successResponse({ res, message: "Post updated." });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const getPosts = async (
   req: AuthenticatedRequest,
   res: Response,
