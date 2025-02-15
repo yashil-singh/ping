@@ -131,3 +131,36 @@ export const deletePost = async (
     next(e);
   }
 };
+
+export const toggleArchive = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: authorId } = req.user!;
+    const { postId } = req.params;
+
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+
+    if (!post) return throwError("Post not found.", 404);
+
+    if (post.authorId !== authorId) throwError("Action unauthorized", 401);
+
+    const updatedPost = await prisma.post.update({
+      data: {
+        isArchived: !post.isArchived,
+      },
+      where: {
+        id: postId,
+      },
+    });
+
+    return successResponse({
+      res,
+      message: `Post ${updatedPost.isArchived ? "archived" : "is now visible to others"}.`,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
