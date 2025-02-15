@@ -2,8 +2,12 @@ import { AuthenticatedRequest } from "../types";
 import { NextFunction, Response } from "express";
 import { throwError } from "../lib/utils";
 import prisma from "../prisma/prisma";
-import { extractCloudinaryPublicId } from "../lib/cloudinary";
+import {
+  deleteImageFromCloudinary,
+  extractCloudinaryPublicId,
+} from "../lib/cloudinary";
 import successResponse from "../lib/responses/successResponse";
+import { selectPostMediaSummary, selectUserSummary } from "../lib/contants";
 
 export const createPost = async (
   req: AuthenticatedRequest,
@@ -54,9 +58,51 @@ export const getPosts = async (
   next: NextFunction,
 ) => {
   try {
-    const posts = await prisma.post.findMany({});
+    const posts = await prisma.post.findMany({
+      include: {
+        author: {
+          select: selectUserSummary,
+        },
+        media: {
+          select: selectPostMediaSummary,
+        },
+      },
+    });
 
     return successResponse({ res, data: posts });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const deletePost = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: authorId } = req.user!;
+    const { postId } = req.params;
+
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+
+    if (!post) return throwError("Post not found.", 404);
+
+    if (post.authorId !== authorId) throwError("Action unauthorized.", 401);
+
+    await prisma.$transaction(async (tx) => {
+      const medias = await tx.postMedia.findMany({ where: { postId } });
+
+      const promises = medias.map(async (media) => {
+        await deleteImageFromCloudinary(media.cloudinaryPublicId, "posts");
+      });
+
+      await Promise.all(promises);
+
+      await tx.post.delete({ where: { id: postId } });
+
+      return successResponse({ res, message: "Post deleted." });
+    });
   } catch (e) {
     next(e);
   }
