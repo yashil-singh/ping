@@ -51,6 +51,8 @@ export const editComment = async (
     });
     if (!comment) return throwError("Comment not found", 404);
 
+    if (authorId !== comment.authorId) throwError("Action unauthorized.", 401);
+
     const updatedComment = await prisma.comment.update({
       data: {
         content,
