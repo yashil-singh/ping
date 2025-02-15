@@ -1,6 +1,9 @@
 import { FileUploadRequest } from "../types";
 import { NextFunction, Response } from "express";
-import { deleteImageFromCloudinary } from "../lib/cloudinary";
+import {
+  deleteImageFromCloudinary,
+  extractCloudinaryPublicId,
+} from "../lib/cloudinary";
 
 /**
  * Middleware to delete uploaded media in case of errors.
@@ -19,7 +22,8 @@ const cleanupUploads = async (
     }
 
     for (const file of mediaFiles) {
-      await deleteImageFromCloudinary(file.path, file.filename.split("/")[1]);
+      const publicId = extractCloudinaryPublicId(file.path);
+      await deleteImageFromCloudinary(publicId!, file.filename.split("/")[1]);
     }
 
     next(err);
