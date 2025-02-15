@@ -14,3 +14,17 @@ export const omitFromUser = {
   resetToken: true,
   resetTokenExpiresAt: true,
 };
+
+export const selectUserSummary = {
+  id: true,
+  name: true,
+  username: true,
+  avatarUrl: true,
+};
+
+export const selectPostMediaSummary = {
+  id: true,
+  type: true,
+  url: true,
+  createdAt: true,
+};

@@ -31,8 +31,6 @@ const sendEmail = async ({
 
     return true;
   } catch (error) {
-    console.log("🚀 ~ send.ts:34 ~ error:", error);
-
     return false;
   }
 };

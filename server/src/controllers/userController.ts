@@ -4,7 +4,10 @@ import { throwError } from "../lib/utils";
 import prisma from "../prisma/prisma";
 import { omitFromUser } from "../lib/contants";
 import successResponse from "../lib/responses/successResponse";
-import { deleteImageFromCloudinary } from "../lib/cloudinary";
+import {
+  deleteImageFromCloudinary,
+  extractCloudinaryPublicId,
+} from "../lib/cloudinary";
 
 export const getUsers = async (
   req: AuthenticatedRequest,
@@ -73,7 +76,6 @@ export const editProfile = async (
 ) => {
   try {
     const { id } = req.user!;
-    console.log(id);
     const { name, username, bio } = req.body;
 
     let user = await prisma.user.findUnique({ where: { id } });
@@ -125,7 +127,8 @@ export const uploadAvatar = async (
     if (!uploadedFile) return throwError("An image is required.");
 
     if (user.avatarUrl) {
-      await deleteImageFromCloudinary(user.avatarUrl, "avatars");
+      const publicId = extractCloudinaryPublicId(user.avatarUrl);
+      await deleteImageFromCloudinary(publicId!, "avatars");
     }
 
     await prisma.user.update({
@@ -153,7 +156,8 @@ export const removeAvatar = async (
 
     if (!user.avatarUrl) return throwError("No avatar uploaded.", 404);
 
-    await deleteImageFromCloudinary(user.avatarUrl, "avatars");
+    const publicId = extractCloudinaryPublicId(user.avatarUrl);
+    await deleteImageFromCloudinary(publicId!, "avatars");
 
     return successResponse({ res, message: "Image removed." });
   } catch (e) {

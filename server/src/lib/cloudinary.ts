@@ -16,10 +16,9 @@ export const extractCloudinaryPublicId = (url: string) => {
 };
 
 export const deleteImageFromCloudinary = async (
-  url: string,
+  publicId: string,
   folder: string,
 ) => {
-  const publicId = extractCloudinaryPublicId(url);
   await cloudinary.uploader.destroy(`ping/${folder}/${publicId}`);
 };
 

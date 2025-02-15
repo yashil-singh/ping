@@ -18,6 +18,7 @@ import {
 } from "../lib/schemas/userSchema";
 import setUploadFolder from "../middlewares/setUploadFolder";
 import upload from "../lib/multer";
+import cleanupUploads from "../middlewares/cleanupUploads";
 
 const router = express.Router();
 
@@ -27,7 +28,7 @@ router.get("/u/:username", getUserByUsername);
 
 router.post(
   "/toggle-connection/:userId",
-  validateData(toggleConnectionSchema, "params"),
+  validateData(toggleConnectionSchema),
   toggleConnection,
 );
 
@@ -37,11 +38,12 @@ router.patch(
   setUploadFolder("avatar"),
   upload.single("avatar"),
   uploadAvatar,
+  cleanupUploads,
 );
 router.patch("/account/toggle-private", togglePrivate);
 router.patch(
   "/request/:userId/:action",
-  validateData(followRequestActionSchema, "params"),
+  validateData(followRequestActionSchema),
   handleConnectionRequest,
 );
 
