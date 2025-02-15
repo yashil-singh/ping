@@ -9,6 +9,7 @@ import authenticate from "./middlewares/authenticate";
 
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
+import postRoutes from "./routes/postRoutes";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", authenticate, userRoutes);
+app.use("/api/posts", authenticate, postRoutes);
 
 app.use(errorMiddleware);
 
