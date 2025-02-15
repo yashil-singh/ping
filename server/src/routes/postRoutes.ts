@@ -5,6 +5,7 @@ import {
   editPost,
   getPosts,
   toggleArchive,
+  togglePostLike,
 } from "../controllers/postController";
 import upload from "../lib/multer";
 import setUploadFolder from "../middlewares/setUploadFolder";
@@ -22,6 +23,7 @@ router.post(
 
 router.patch("/:postId", editPost);
 router.patch("/toggle-archive/:postId", toggleArchive);
+router.patch("/toggle-like/:postId", togglePostLike);
 
 router.get("/", getPosts);
 

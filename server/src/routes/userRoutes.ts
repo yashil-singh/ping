@@ -18,6 +18,7 @@ import {
 } from "../lib/schemas/userSchema";
 import setUploadFolder from "../middlewares/setUploadFolder";
 import upload from "../lib/multer";
+import cleanupUploads from "../middlewares/cleanupUploads";
 
 const router = express.Router();
 
@@ -37,6 +38,7 @@ router.patch(
   setUploadFolder("avatar"),
   upload.single("avatar"),
   uploadAvatar,
+  cleanupUploads,
 );
 router.patch("/account/toggle-private", togglePrivate);
 router.patch(

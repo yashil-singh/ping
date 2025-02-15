@@ -164,3 +164,56 @@ export const toggleArchive = async (
     next(e);
   }
 };
+
+export const togglePostLike = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id: userId } = req.user!;
+    const { postId } = req.params;
+
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) return throwError("Post not found.", 404);
+
+    const hasLiked = await prisma.postLike.findUnique({
+      where: {
+        userId_postId: {
+          postId,
+          userId,
+        },
+      },
+    });
+
+    let message;
+
+    await prisma.$transaction(async (tx) => {
+      if (hasLiked) {
+        await tx.postLike.delete({
+          where: {
+            userId_postId: {
+              postId,
+              userId,
+            },
+          },
+        });
+
+        message = "Like removed.";
+      } else {
+        await tx.postLike.create({
+          data: {
+            userId,
+            postId,
+          },
+        });
+
+        message = "Post liked.";
+      }
+    });
+
+    return successResponse({ res, message });
+  } catch (e) {
+    next(e);
+  }
+};

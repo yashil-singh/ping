@@ -119,13 +119,13 @@ model PostMedia {
 }
 
 model PostLike {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
   userId    String
-  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
   postId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
   post      Post     @relation(references: [id], fields: [postId], onDelete: Cascade)
 
+  @@id([userId, postId])
   @@index([userId])
   @@index([postId])
   @@map("post_likes")
