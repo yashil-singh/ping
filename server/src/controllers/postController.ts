@@ -217,3 +217,26 @@ export const togglePostLike = async (
     next(e);
   }
 };
+
+export const getPostLikes = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (!post) return throwError("Post not found.", 404);
+
+    const postLikes = await prisma.postLike.findMany({
+      where: {
+        postId,
+      },
+    });
+
+    return successResponse({ res, data: postLikes });
+  } catch (e) {
+    next(e);
+  }
+};
