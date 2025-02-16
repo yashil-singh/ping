@@ -10,6 +10,8 @@ import authenticate from "./middlewares/authenticate";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import postRoutes from "./routes/postRoutes";
+import messageRoutes from "./routes/messageRoutes";
+import chatRoutes from "./routes/chatRoutes";
 
 dotenv.config();
 
@@ -27,6 +29,8 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", authenticate, userRoutes);
 app.use("/api/posts", authenticate, postRoutes);
+app.use("/api/chats", authenticate, chatRoutes);
+app.use("/api/messages", authenticate, messageRoutes);
 
 app.use(errorMiddleware);
 

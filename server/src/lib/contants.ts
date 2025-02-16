@@ -28,3 +28,20 @@ export const selectPostMediaSummary = {
   url: true,
   createdAt: true,
 };
+
+export const selectChatRecentMessage = {
+  id: true,
+  content: true,
+  type: true,
+  sender: {
+    select: selectUserSummary,
+  },
+  post: {
+    select: {
+      id: true,
+      author: {
+        select: selectUserSummary,
+      },
+    },
+  },
+};
