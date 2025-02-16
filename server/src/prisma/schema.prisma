@@ -218,13 +218,14 @@ model Chat {
 }
 
 model ChatMember {
-  joined    DateTime @default(now())
-  chatId    String
-  chat      Chat     @relation(references: [id], fields: [chatId])
-  userId    String
-  user      User     @relation(name: "member", references: [id], fields: [userId], onDelete: Cascade)
-  addedById String
-  addedBy   User     @relation(name: "membersAdded", references: [id], fields: [addedById], onDelete: Cascade)
+  userId      String
+  chatId      String
+  addedById   String
+  hasDeleted  Boolean   @default(false)
+  joined      DateTime  @default(now())
+  chat        Chat      @relation(references: [id], fields: [chatId])
+  user        User      @relation(name: "member", references: [id], fields: [userId], onDelete: Cascade)
+  addedBy     User      @relation(name: "membersAdded", references: [id], fields: [addedById], onDelete: Cascade)
 
   @@id([userId, chatId])
   @@index([chatId])
