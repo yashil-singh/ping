@@ -1,11 +1,23 @@
-import { Button } from "./components/ui/button";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import RootLayout from "@/layouts/RootLayout.tsx";
+import Home from "@/pages/Home.tsx";
 
 function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      children: [
+        {
+          index: true,
+          element: <Home />,
+        },
+      ],
+    },
+  ]);
   return (
     <>
-      <h1 className="font-bold text-xl">Ping</h1>
-
-      <Button>Ping</Button>
+      <RouterProvider router={router} />
     </>
   );
 }
