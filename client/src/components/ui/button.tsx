@@ -24,14 +24,14 @@ const buttonVariants = cva(
         default: "px-4 py-2",
         sm: "rounded-md px-3 py-2 text-xs",
         lg: "rounded-md py-2 px-8",
-        icon: "p-2",
+        icon: "p-2 rounded-full",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
@@ -50,7 +50,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
