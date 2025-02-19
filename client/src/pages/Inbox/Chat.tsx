@@ -6,12 +6,15 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import MessageBubble from "@/components/MessageBubble.tsx";
 import messages from "@/assets/data/Messages.ts";
 import { format } from "date-fns";
+import { chats } from "@/assets/data/Chats.ts";
 
 const Chat = () => {
   const navigate = useNavigate();
   const { chatId } = useParams();
 
-  const userId = "user1";
+  const user = { id: "user1" };
+  const chat = chats[0];
+  const chatMember = chat.members[0];
 
   const [content, setContent] = useState("");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -39,12 +42,15 @@ const Chat = () => {
           >
             <ChevronLeft className="size-6!" />
           </Button>
-          <Link to={`/sangya`} className="flex items-center gap-4">
-            <AccountAvatar />
+          <Link
+            to={`/${chatMember.username}`}
+            className="flex items-center gap-4"
+          >
+            <AccountAvatar avatarUrl={chatMember.avatarUrl} />
             <div className="flex flex-col">
-              <span className="font-bold">sangyavaidya</span>
+              <span className="font-bold">{chatMember.name}</span>
               <span className="text-sm text-muted-foreground">
-                sangyavaidya
+                {chatMember.username}
               </span>
             </div>
           </Link>
@@ -61,15 +67,18 @@ const Chat = () => {
         <div className="px-2 pt-2 space-y-2 mt-auto w-full">
           <div className="flex flex-col gap-2">
             <div className="w-full flex flex-col gap-5 items-center justify-center py-4">
-              <AccountAvatar className="size-32" />
+              <AccountAvatar
+                className="size-32"
+                avatarUrl={chatMember.avatarUrl}
+              />
 
-              <h1 className="font-semibold text-xl">Sangya</h1>
+              <h1 className="font-semibold text-xl">{chatMember.name}</h1>
             </div>
             {messages.map((message, index) => {
-              const isSender = message.senderId === userId;
+              const isSender = message.sender.id === user.id;
               const nextMessage = messages[index + 1];
               const isNextMessageSameUser =
-                nextMessage?.senderId === message.senderId;
+                nextMessage?.sender.id === message.sender.id;
               const prevMessage = messages[index - 1];
 
               const showDate =
@@ -82,8 +91,7 @@ const Chat = () => {
               return (
                 <MessageBubble
                   key={message.id}
-                  username={message.toString()}
-                  content={message.content}
+                  message={message}
                   showAvatar={showAvatar}
                   isSender={isSender}
                   showDate={showDate}

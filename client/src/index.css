@@ -12,7 +12,7 @@
   --card-foreground: hsl(0 0% 3.9%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(0 0% 3.9%);
-  --primary: hsl(0 0% 9%);
+  --primary: hsl(216 49% 67%);
   --primary-foreground: hsl(0 0% 98%);
   --secondary: hsl(0 0% 96.1%);
   --secondary-foreground: hsl(0 0% 9%);
@@ -40,8 +40,8 @@
   --card-foreground: hsl(0 0% 98%);
   --popover: hsl(0 0% 3.9%);
   --popover-foreground: hsl(0 0% 98%);
-  --primary: hsl(0 0% 98%);
-  --primary-foreground: hsl(0 0% 9%);
+  --primary: hsl(216 49% 67%);
+  --primary-foreground: hsl(0 0% 98%);
   --secondary: hsl(0 0% 14.9%);
   --secondary-foreground: hsl(0 0% 98%);
   --muted: hsl(0 0% 14.9%);
@@ -117,12 +117,12 @@
 
   /* Track */
   ::-webkit-scrollbar-track {
-    @apply bg-accent
+    @apply bg-background
   }
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary/60 transition-colors duration-150 rounded-full
+    @apply bg-foreground/10
   }
 
   .no-scrollbar::-webkit-scrollbar {

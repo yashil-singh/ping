@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { SquarePen } from "lucide-react";
 import ChatBox from "@/components/ChatBox.tsx";
+import { chats } from "@/assets/data/Chats.ts";
 
 const InboxLayout = () => {
   const location = useLocation();
@@ -26,22 +27,20 @@ const InboxLayout = () => {
         <h1 className="font-bold text-lg ml-4">Messages</h1>
 
         <div className="h-full overflow-y-auto">
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(
-            (value) => (
-              <NavLink
-                key={`chat-${value}`}
-                to={`/inbox/chat/${value}`}
-                className={({ isActive }) =>
-                  cn(
-                    "hover:bg-accent transition-colors duration-150 flex",
-                    isActive && "bg-accent/60",
-                  )
-                }
-              >
-                <ChatBox isSeen={value % 3 === 0} />
-              </NavLink>
-            ),
-          )}
+          {chats.map((chat) => (
+            <NavLink
+              key={`chat-${chat.id}`}
+              to={`/inbox/chat/${chat.id}`}
+              className={({ isActive }) =>
+                cn(
+                  "hover:bg-accent transition-colors duration-150 flex",
+                  isActive && "bg-accent/60",
+                )
+              }
+            >
+              <ChatBox chat={chat} />
+            </NavLink>
+          ))}
         </div>
       </div>
       <div className={cn("flex-1 flex flex-col", isInbox && "max-md:hidden")}>

@@ -13,15 +13,9 @@ const AccountAvatar = ({
   avatarUrl?: string;
   className?: string;
 }) => {
-  const currentUserAvatarUrl =
-    "https://i.pinimg.com/736x/7f/34/fe/7f34fe36b7d51c6cd0c7e1c06de94566.jpg";
-
   return (
     <Avatar className={cn("", className)}>
-      <AvatarImage
-        src={avatarUrl ?? currentUserAvatarUrl}
-        className="object-cover"
-      />
+      <AvatarImage src={avatarUrl} className="object-cover" />
       <AvatarFallback>
         <img src={placeholder} />
       </AvatarFallback>

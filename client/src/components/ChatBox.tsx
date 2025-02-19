@@ -1,14 +1,17 @@
 import AccountAvatar from "@/components/AccountAvatar.tsx";
-import { cn } from "@/lib/utils.ts";
+import { cn, formatDateDistanceNoSuffix } from "@/lib/utils.ts";
+import { ChatType } from "@/lib/types.ts";
 
-const ChatBox = ({ isSeen }: { isSeen: boolean }) => {
+const ChatBox = ({ chat }: { chat: ChatType }) => {
+  const user = { id: "user1" };
+  const { content, sender, isSeen, createdAt } = chat.messages[0];
   return (
     <div className="flex items-center gap-5 p-4 w-full">
-      <AccountAvatar className="size-14" />
+      <AccountAvatar className="size-14" avatarUrl={sender.avatarUrl} />
 
       <div className={cn(isSeen ? "" : "font-bold")}>
         {/* Name */}
-        <span className="text-sm">Sangya</span>
+        <span className="text-sm">{sender.name}</span>
 
         {/* Latest message and time */}
         <div
@@ -18,10 +21,12 @@ const ChatBox = ({ isSeen }: { isSeen: boolean }) => {
           )}
         >
           {/* Message */}
-          <span className="line-clamp-1 text-ellipsis">You: Hey</span>
+          <span className="line-clamp-1 text-ellipsis">
+            {sender.id === user.id ? "You" : sender.name}: {content}
+          </span>
           <span>·</span>
           {/* Time */}
-          <span>15m</span>
+          <span>{formatDateDistanceNoSuffix(createdAt)}</span>
         </div>
       </div>
     </div>

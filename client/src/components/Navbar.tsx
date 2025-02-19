@@ -22,7 +22,7 @@ import {
 
 export const Navbar = () => {
   return (
-    <nav className="w-[60px] xl:w-[300px] border bg-background hidden md:flex px-1 xl:px-4 py-8 flex-col justify-between">
+    <nav className="w-[60px] xl:w-[300px] border-r bg-background hidden md:flex px-1 xl:px-4 py-8 flex-col justify-between">
       <div>
         <Link to="/">
           <Logo className="h-10 hidden xl:block" />
@@ -38,7 +38,7 @@ export const Navbar = () => {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="w-full py-3 justify-start font-normal text-base"
+              className="w-full py-3 xl:justify-start font-normal text-base"
             >
               <Menu className="size-6!" />
               <span className="hidden xl:block">More</span>
