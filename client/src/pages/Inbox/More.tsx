@@ -24,11 +24,11 @@ const More = () => {
         <h1 className="text-xl font-bold font-header">Sangya</h1>
 
         {/* Switch tabs */}
-        <div className="w-full flex items-center justify-center gap-5 mt-8 sticky top-0 bg-background border-b">
+        <div className="w-full flex items-center justify-center gap-5 px-5 mt-8 sticky top-0 bg-background mb-0.5">
           <button
             className={cn(
-              "flex items-center justify-center h-[40px] w-full max-w-[200px] cursor-pointer border-b-2",
-              tab === "media" ? "" : "border-background",
+              "flex items-center justify-center h-[40px] w-full max-w-[200px] cursor-pointer",
+              tab === "media" && "border-b-2 border-foreground",
             )}
             onClick={() => setTab("media")}
           >
@@ -39,8 +39,8 @@ const More = () => {
           </button>
           <button
             className={cn(
-              "flex items-center justify-center h-[40px] w-full max-w-[200px] cursor-pointer border-b-2",
-              tab === "shares" ? "" : "border-background",
+              "flex items-center justify-center h-[40px] w-full max-w-[200px] cursor-pointer",
+              tab === "shares" && "border-b-2 border-foreground",
             )}
             onClick={() => setTab("shares")}
           >
