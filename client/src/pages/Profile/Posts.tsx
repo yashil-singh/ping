@@ -4,6 +4,24 @@ const Posts = () => {
       <div className="aspect-square w-full border">Post</div>
       <div className="aspect-square w-full border">Post</div>
       <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
+      <div className="aspect-square w-full border">Post</div>
     </div>
   );
 };

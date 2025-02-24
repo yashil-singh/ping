@@ -13,6 +13,8 @@ import More from "@/pages/Inbox/More.tsx";
 import NotFound from "@/pages/NotFound.tsx";
 import Posts from "@/pages/Profile/Posts.tsx";
 import Saved from "@/pages/Profile/Saved.tsx";
+import Followers from "./pages/Profile/Followers";
+import Following from "./pages/Profile/Following";
 
 function App() {
   const router = createBrowserRouter([
@@ -79,6 +81,14 @@ function App() {
             {
               path: "saved",
               element: <Saved />,
+            },
+            {
+              path: "followers",
+              element: <Followers />,
+            },
+            {
+              path: "following",
+              element: <Following />,
             },
           ],
         },
